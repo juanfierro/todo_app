@@ -38,6 +38,7 @@ function addTodo(text){
 
     saveTodos()
     renderTodos()
+    taskInput.value = "";
 }
 
 function saveTodos() {
@@ -113,6 +114,68 @@ function renderTodos(){
     })
 }
 
-function clearCompleted() {}
-function toggleTodo(id) {}
-function deleteTodo(id) {}
+function clearCompleted() {
+    todos = todos.filter(todo => !todo.completed);
+    saveTodos();
+    renderTodos();
+}
+
+function toggleTodo(id) {
+    todos = todos.map(todo => {
+        if(todo.id === id) {
+            return{...todo, completed:!todo.completed}
+        }
+        return todo;
+    })
+    saveTodos();
+    renderTodos();
+
+}
+
+function deleteTodo(id) {
+    todos = todos.filter(todo => todo.id !== id);
+    saveTodos();
+    renderTodos();
+}
+
+function loadTodos(){
+    const sortedTodos = localStorage.getItem("todos");
+    if(sortedTodos) todos = JSON.parse(sortedTodos);
+    renderTodos();
+}
+
+filters.forEach(filter => {
+    filter.addEventListener("click", () => {
+        setActiveFilter(filter.getAttribute("data-filter"))
+    })
+})
+
+function setActiveFilter(filter){
+    currentFilter = filter;
+
+    filters.forEach((item) => {
+        if(item.getAttribute("data-filter") === filter){
+            item.classList.add("active");
+        }
+        else {
+            item.classList.remove("active");
+        }
+    });
+    renderTodos();
+}
+
+function setDate(){
+
+    const options = {weekday: "long", month: "short", day: "numeric"};
+    const today = new Date();
+
+    dateElement.textContent = today.toLocaleDateString("en-US", options);
+
+}
+
+window.addEventListener("DOMContentLoaded", () => {
+    loadTodos();
+    updateItemsCount();
+    setDate();
+
+})
